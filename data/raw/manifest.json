@@ -1,0 +1,28 @@
+[
+  {
+    "stem": "wfp_food_prices_nga",
+    "file": "wfp_food_prices_nga_2026-11-16.csv",
+    "status": "new",
+    "downloaded_at": "2026-11-16T10:25:16",
+    "source_url": "https://data.humdata.org/dataset/42db041f-7aaf-4ab4-961f-2a12096861e7/resource/12b51155-0cd3-4806-9924-61ede4077591/download/wfp_food_prices_nga.csv",
+    "hdx_resource_last_modified": "2026-11-08T09:09:20.588801",
+    "hdx_dataset_last_modified": "2026-11-08T09:09:20.588801",
+    "dataset_date": "[2002-01-15T00:00:00 TO 2026-11-15T23:59:59]",
+    "licence": "Creative Commons Attribution for Intergovernmental Organisations (CC BY-IGO)",
+    "bytes": 11128392,
+    "sha256": "63895c66a8362e138705df2fce98534d9ec63dcb8e23603a29180b3e3496c3af"
+  },
+  {
+    "stem": "wfp_markets_nga",
+    "file": "wfp_markets_nga_2026-11-16.csv",
+    "status": "new",
+    "downloaded_at": "2026-11-16T10:25:19",
+    "source_url": "https://data.humdata.org/dataset/42db041f-7aaf-4ab4-961f-2a12096861e7/resource/5329e772-0b74-4f65-8cc0-37a0915cc7e4/download/wfp_markets_nga.csv",
+    "hdx_resource_last_modified": "2026-02-18T23:41:46.117988",
+    "hdx_dataset_last_modified": "2026-11-08T09:09:20.588801",
+    "dataset_date": "[2002-01-15T00:00:00 TO 2026-11-15T23:59:59]",
+    "licence": "Creative Commons Attribution for Intergovernmental Organisations (CC BY-IGO)",
+    "bytes": 5349,
+    "sha256": "b275eac2d685b88be042caf0c97a2dd80d3bd1da3fe4850d50f4ee4f2b1821cd"
+  }
+]

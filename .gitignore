@@ -1,0 +1,8 @@
+# data is downloaded by script, not stored in git
+data/raw/*
+!data/raw/manifest.json
+data/processed/*
+!data/processed/.gitkeep
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
