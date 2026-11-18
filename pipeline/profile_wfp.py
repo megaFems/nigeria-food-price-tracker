@@ -61,7 +61,7 @@ def main() -> None:
                      FROM t GROUP BY 1 ORDER BY rows DESC""")))
 
     s.append("\n\n## Commodities: units, rows and recent coverage (top 40 by rows)\n")
-    s.append(md(q("""SELECT category, commodity, STRING_AGG(DISTINCT unit, ', ') AS units, COUNT(*) AS rows,
+    s.append(md(q("""SELECT category, commodity, STRING_AGG(DISTINCT unit, ', ' ORDER BY unit) AS units, COUNT(*) AS rows,
                      COUNT(DISTINCT admin1) AS states, MIN(d) AS first, MAX(d) AS last,
                      COUNT(*) FILTER (WHERE d > (SELECT MAX(d) FROM t) - INTERVAL 12 MONTH) AS rows_last_12m
                      FROM t GROUP BY ALL ORDER BY rows DESC LIMIT 40""")))
