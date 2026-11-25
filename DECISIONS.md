@@ -98,3 +98,20 @@ WFP covers about 13 states to 2022 but only Borno and Yobe (plus Adamawa to 2025
 - **Limits:** the latest month cannot be compared with later readings yet. Some removed prices may be real.
 - **Effect:** 2,460 of 52,314 basket prices (1,818 of them spinach). November 2026 is 350.8 clean, 350.4 with everything.
 - **Affects:** `pipeline/suspects.py`, `indices.py`, `report_indices.py`, `report_quality.py`, `checks/check_indices.py`.
+
+## D-017: Clean series starts in September 2018 (2026-11-25)
+- **Found:** in June 2018 eleven Yobe foods halve at once and stay there; both oils follow by August. Borno has no such step.
+  Before, these 13 foods cost about 1.4 to 1.8 times Borno's price in Yobe; after, nearly all are at or below it. A change in the
+  measure would explain it, but this is not confirmed. The old base year (July 2017 to June 2018) was affected.
+- **Also found:** Yobe in October 2020 and Borno in April 2022, where the whole basket drops over 20% and returns a month later.
+- **Decision:** final figures start in September 2018, with September 2018 to August 2019 = 100. The two state months are
+  suspected. All are still shown as suspects (D-016).
+- **Effect:** the November 2026 basket is 4.5 times the base year, not 3.5 (different base). Yobe has now risen more than Borno.
+
+## D-018: How the three questions are answered (2026-11-25)
+- **Cost:** one pack of each of the 24 foods at a typical price of the last 12 months, carried back with the item indices. Months
+  missing a food are blank. Dearer packs weigh more than in the index.
+- **Places:** each market's last 6 months against a year earlier; at least 15 foods with 3 matching months each; 95% ranges
+  across foods.
+- **Unusual moves:** 3-month changes more than 3 robust standard deviations from usual, in Borno and Yobe together.
+- **Affects:** `pipeline/questions.py`, `reports/findings.md`.

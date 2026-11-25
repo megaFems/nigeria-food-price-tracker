@@ -3,14 +3,14 @@
 A reproducible data pipeline and analysis of staple food prices in Nigeria: which items and places rose
 fastest, what a basic food basket costs over time, and which price moves are unusual.
 
-**Status:** phase 1 (North-East: Borno, Yobe, Adamawa). Data downloaded, profiled and cleaned with checks;
-price indices next.
+**Status:** phase 1 (North-East: Borno, Yobe, Adamawa). The findings are in [reports/findings.md](reports/findings.md);
+dashboard next.
 Design decisions are recorded in [DECISIONS.md](DECISIONS.md).
 
 ## Data
 - **World Food Programme food prices for Nigeria**, via the Humanitarian Data Exchange (HDX), licence CC BY-IGO.
   Monthly market prices, 2002 to present. See [DATA_SOURCES.md](DATA_SOURCES.md) for coverage and caveats.
-- Planned: **NBS Selected Food Price Watch** (all states), once access is set up.
+- Possible later: **NBS Selected Food Price Watch**. The tables checked so far give zone averages, not every state.
 
 ## Run it
 ```
@@ -21,6 +21,7 @@ python pipeline/clean_wfp.py     # build data/processed/wfp_ne_retail_clean.parq
 python pipeline/indices.py       # price indices
 python pipeline/report_indices.py # write reports/indices_summary.md and charts
 python pipeline/report_quality.py # write reports/data_quality.md
+python pipeline/questions.py     # write reports/findings.md
 ```
 
 ## Credits
