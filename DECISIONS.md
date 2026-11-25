@@ -40,7 +40,7 @@ WFP covers about 13 states to 2022 but only Borno and Yobe (plus Adamawa to 2025
 - **Decision:** flag a price above 5x or below 1/5 of the same item's median across markets in that month.
 - **Why:** extreme values may be data errors or real shocks; keeping them visible lets each analysis choose.
 
-## D-008: Price indices from matched markets (2026-11-18)
+## D-008: Price indices from matched markets (2026-11-18, replaced by D-012)
 - **Decision:** each month's change for an item uses only markets that report it in both months; the monthly
   changes are chained into an index.
 - **Why:** the markets reporting change a lot (5 to 38 a month). A plain average of all markets would partly
@@ -59,3 +59,42 @@ WFP covers about 13 states to 2022 but only Borno and Yobe (plus Adamawa to 2025
 
 ## D-010: Adamawa ends in 2025-11 (2026-11-18)
 - **Decision:** include Adamawa up to 2025-11 and mark the end on charts; state-level series do not extend it.
+
+## D-012: Time-dummy indices (2026-11-25, replaces D-008)
+- **Decision:** per item and area, fit log price = month effect + market effect; the basket repeats this on the item
+  indices (month + item effects, equal weights). July 2017 to June 2018 = 100.
+- **Why:** the chained version drifted (fish 21.3x against 9.6x in plain medians). A base year is used because some
+  series have no price in July 2017.
+- **Affects:** `pipeline/indices.py`, `checks/check_indices.py`. Past values can shift slightly as months are added.
+
+## D-013: Suspected recording errors (2026-11-25, replaced by D-016)
+- **Decision:** a state-item month is removed only if (1) it jumps more than 3x and the next reading undoes it, and
+  (2) its median is also at least 2x beyond every other month of that series.
+- **Why:** prices in Nigeria can move sharply for real reasons, so a jump alone is not proof. Of 9 candidates, 5 pass
+  both tests: milk powder in Borno and Yobe (2022-05) and Borno (2025-12), Yobe bananas and oranges (2021-05). Kept:
+  Borno bananas (2025-01), fish (2017-09, 2018-05), salt (2022-05).
+- **Effect:** the November 2026 basket is 351.3 with none or five removed and 351.0 with all nine.
+
+## D-014: Spinach is not in the indices (2026-11-25)
+- **Decision:** left out of the indices, kept in the clean table; the index basket has 24 items.
+- **Why:** the typical price sits near 50 naira for most of 2017 to 2023, Borno has long gaps, and Borno prices are 5 to
+  9x higher from April to November 2019 while Yobe stays at 50. The cause is not known.
+
+## D-015: Suspect sugar and Yobe May 2021 prices are kept with a warning (2026-11-25, replaced by D-016)
+- **Decision:** keep sugar (2024-10 to 2024-11, 2026-07 to 2026-09) and Yobe eggs, sugar and watermelons (2021-05) in the
+  indices; mark those months on the basket chart and explain them in the report.
+- **Why:** coverage is already thin, and it is not confirmed that these prices are errors.
+- **Effect:** the index may be up to about 8% too high in the sugar months, and reads 99 instead of 106 in May 2021.
+  November 2026 barely changes.
+
+## D-016: Suspected prices are shown and measured, never counted (2026-11-25, replaces D-013 and D-015)
+- **Decision:** headline, calculations and findings use clean prices only. Suspected prices stay in the clean table and appear
+  in the reports and charts with the percentage effect they would have.
+- **Suspected means** any of: spinach (D-014); an outlier (D-007); the six mixed-up Yobe foods in May 2021; a state month that
+  jumps more than 3x and is undone by the next reading (including the ones D-013 had kept); a state median, a market's own price
+  or a single price more than 3x away from readings both before and after. Rules are in `pipeline/suspects.py`.
+- **Why:** conclusions should rest only on prices nothing casts doubt on, while readers can still see the rest. Suspected is
+  not proven wrong.
+- **Limits:** the latest month cannot be compared with later readings yet. Some removed prices may be real.
+- **Effect:** 2,460 of 52,314 basket prices (1,818 of them spinach). November 2026 is 350.8 clean, 350.4 with everything.
+- **Affects:** `pipeline/suspects.py`, `indices.py`, `report_indices.py`, `report_quality.py`, `checks/check_indices.py`.

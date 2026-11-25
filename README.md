@@ -18,6 +18,9 @@ pip install -r requirements.txt
 python pipeline/ingest_wfp.py    # download the latest WFP files
 python pipeline/profile_wfp.py   # write reports/profile_wfp.md
 python pipeline/clean_wfp.py     # build data/processed/wfp_ne_retail_clean.parquet (stops if a check fails)
+python pipeline/indices.py       # price indices
+python pipeline/report_indices.py # write reports/indices_summary.md and charts
+python pipeline/report_quality.py # write reports/data_quality.md
 ```
 
 ## Credits
