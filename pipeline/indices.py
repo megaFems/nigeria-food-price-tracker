@@ -1,9 +1,9 @@
-"""Price indices for the North-East basket (D-012, D-014, D-016).
+"""Price indices for the North-East basket (D-012, D-014, D-016, D-017).
 
 Item index, per item and area: log(price) = month effect + market effect, fitted by least squares. The market
 effects absorb markets that are usually dear or cheap, so markets joining or leaving do not move the index.
 Basket index: the same fit on the item indices (month effect + item effect), each item with equal weight.
-Both are scaled so the geometric mean over July 2017 to June 2018 is 100.
+Both are scaled so the geometric mean over September 2018 to August 2019 is 100.
 
 Final figures use clean prices only. The same indices with every price kept are saved for comparison.
 
@@ -28,7 +28,7 @@ OUT_MARKED = PROCESSED / "basket_prices_marked.parquet"
 OUT_EFFECTS = PROCESSED / "suspect_effects.parquet"
 
 ALL_AREAS = "North-East"
-BASE = pd.period_range("2017-07", "2018-06", freq="M")
+BASE = pd.period_range("2018-09", "2019-08", freq="M")
 MIN_BASE = 6          # base-period months a series needs
 MIN_MARKETS = 3       # markets a month needs
 MIN_ITEMS = 20        # items a basket month needs

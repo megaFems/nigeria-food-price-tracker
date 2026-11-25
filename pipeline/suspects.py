@@ -2,8 +2,10 @@
 
 Reasons, in the order they are given to a price:
   item      food not used in the indices at all (D-014)
+  early     before September 2018: 13 Yobe foods look measured differently, so the region is not comparable (D-017)
   outlier   above 5x or below 1/5 of the item's median across markets that month (D-007)
   food mix  Yobe, May 2021: prices that look assigned to the wrong foods
+  sheet     state month where the whole basket jumps over 20% and the next month undoes it (D-017)
   reversal  state month that jumps more than 3x and is undone by the next reading (D-013)
   state     state median more than 3x above (or below 1/3 of) both the readings before and the readings after
   market    the same test on one market's own prices
@@ -23,9 +25,11 @@ LEFT_OUT = {
 }
 INDEX_ITEMS = tuple(i for i in BASKET if i not in LEFT_OUT)
 MIX = ("Yobe", pd.Period("2021-05", "M"), ("Bananas", "Eggs", "Oranges", "Spinach", "Sugar", "Watermelons"))
+START = pd.Period("2018-09", "M")      # first month of the clean series
+SHEET_JUMP, SHEET_NET, SHEET_ITEMS = 0.20, 0.10, 15
 JUMP, REVERT, MIN_MATCHED, MAX_BACK = 3, 2, 3, 12
 READINGS, WINDOW, MIN_SIDE = 6, 12, 2
-REASONS = ("item", "outlier", "food mix", "reversal", "state", "market", "price")
+REASONS = ("item", "early", "outlier", "food mix", "sheet", "reversal", "state", "market", "price")
 
 
 def matched_changes(g: pd.DataFrame) -> list:
@@ -53,6 +57,24 @@ def reversals(df: pd.DataFrame) -> set:
         for (m, a), (_, b) in zip(ch, ch[1:]):
             if (a > JUMP or a < 1 / JUMP) and (a > 1) != (b > 1) and 1 / REVERT <= a * b <= REVERT:
                 found.add((state, item, m))
+    return found
+
+
+def sheets(df: pd.DataFrame) -> set:
+    """State-months where the matched basket jumps more than SHEET_JUMP and the next month undoes it."""
+    found = set()
+    for state, g in df.groupby("state"):
+        wide = np.log(g.pivot_table(index=["commodity", "market_id"], columns="month", values="price_per_std_unit"))
+        move = {}
+        for a, b in zip(wide.columns, wide.columns[1:]):
+            d = (wide[b] - wide[a]).dropna().groupby("commodity").agg(["mean", "size"])
+            d = d.loc[d["size"] >= MIN_MATCHED, "mean"]
+            if (b - a).n == 1 and len(d) >= SHEET_ITEMS:
+                move[b] = float(np.exp(d.mean()) - 1)
+        for m, x in move.items():
+            y = move.get(m + 1)
+            if y is not None and abs(x) > SHEET_JUMP and abs((1 + x) * (1 + y) - 1) < SHEET_NET:
+                found.add((state, m))
     return found
 
 
@@ -89,8 +111,11 @@ def mark(df: pd.DataFrame) -> pd.DataFrame:
         df.loc[hit & df["suspect"].eq(""), "suspect"] = reason
 
     give(df["commodity"].isin(LEFT_OUT), "item")
+    give(df["month"] < START, "early")
     give(df["is_outlier"], "outlier")
     give(df["state"].eq(MIX[0]) & df["month"].eq(MIX[1]) & df["commodity"].isin(MIX[2]), "food mix")
+    bad_sheets = sheets(df[~df["is_outlier"] & ~df["commodity"].isin(LEFT_OUT)])
+    give(pd.Series([k in bad_sheets for k in zip(df["state"], df["month"])], index=df.index), "sheet")
     rev = reversals(df[~df["is_outlier"] & ~df["commodity"].isin(LEFT_OUT)])
     give(pd.Series([k in rev for k in zip(df["state"], df["commodity"], df["month"])], index=df.index), "reversal")
 

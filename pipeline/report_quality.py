@@ -66,7 +66,7 @@ def main() -> None:
         "_Handled: flagged, left out of the index._",
         "- Milk powder, Borno, typical price per 400 g: " + ", ".join(f"{m}: {v:,.0f}" for m, v in milk.items())
         + " naira. No reading exists between May 2022 and February 2023. _Handled: not counted._",
-        f"- In all, {n_sus:,} of {len(marked):,} basket prices since July 2017 are suspected, most of them spinach. "
+        f"- In all, {n_sus:,} of {len(marked):,} basket prices since July 2017 are suspected or not comparable, most of them from before September 2018 or spinach. "
         "_Handled: shown with their effect in the findings report, not counted in any final figure._",
         f"- {bad_usd:,} dollar prices imply an exchange rate more than 5x away from the typical rate that month. "
         "_Handled: the dollar column is never used._\n",
@@ -75,6 +75,16 @@ def main() -> None:
         f"The month before, April 2021, has only {april} of {len(BASKET)} basket foods in Yobe.\n",
         pd.DataFrame(rows).to_markdown(index=False),
         "\n_Handled: all six foods are left out for Yobe that month._\n",
+        "## Yobe, June 2018: eleven foods halve at once and stay there",
+        "Typical Yobe price, in naira:\n",
+        pd.DataFrame([{"food (Yobe)": i, **{m: round(typical(df, "Yobe", i, m)) for m in ("2018-05", "2018-06", "2018-09")}}
+                      for i in ("Beans (red)", "Beans (white)", "Cowpeas", "Groundnuts", "Maize flour", "Millet", "Rice (imported)",
+                                "Rice (local)", "Salt", "Sorghum", "Sugar", "Oil (palm)", "Oil (vegetable)")]).to_markdown(index=False),
+        "\nBorno shows no such step. Both oils follow over the next two months. A change in the measure would explain it, but this is "
+        "not confirmed. _Handled: final figures start in September 2018._\n",
+        "## Whole surveys that jump and come back",
+        "Yobe in October 2020 (basket down 22%, then up 31%) and Borno in April 2022 (down 27%, then up 45%; eggs, meat, fruit and oils "
+        "are near half price). _Handled: those state months are not counted._\n",
         "## Sugar: about 5x higher, twice, in every area reporting",
         "Typical price per 500 g, in naira:\n",
         pd.DataFrame(sugar).to_markdown(index=False, floatfmt=",.0f"),

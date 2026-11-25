@@ -4,9 +4,9 @@ import pandas as pd
 
 
 def run_checks(items: pd.DataFrame, basket: pd.DataFrame, marked: pd.DataFrame) -> pd.DataFrame:
-    from clean_wfp import BASKET_START, KNOWN_GAP
+    from clean_wfp import KNOWN_GAP
     from indices import ALL_AREAS, BASE, MIN_ITEMS, MIN_MARKETS
-    from suspects import INDEX_ITEMS, REASONS
+    from suspects import INDEX_ITEMS, REASONS, START
 
     problems = []
     for name, t, key in (("items", items, ["area", "commodity"]), ("basket", basket, ["area"])):
@@ -27,7 +27,7 @@ def run_checks(items: pd.DataFrame, basket: pd.DataFrame, marked: pd.DataFrame) 
         problems.append(f"North-East items differ from the index items: {sorted(set(INDEX_ITEMS) ^ ne_items)}")
     gap = pd.to_datetime(list(KNOWN_GAP))
     ne = set(basket.loc[basket["area"] == ALL_AREAS, "month"])
-    want = [m for m in pd.date_range(BASKET_START, max(ne), freq="MS") if not gap[0] <= m <= gap[1]]
+    want = [m for m in pd.date_range(START.to_timestamp(), max(ne), freq="MS") if not gap[0] <= m <= gap[1]]
     missing = [str(m.date()) for m in want if m not in ne]
     if missing:
         problems.append(f"North-East basket missing in {len(missing)} months: {missing[:6]}")
