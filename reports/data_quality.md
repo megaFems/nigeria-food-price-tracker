@@ -13,7 +13,7 @@ What made the data hard to work with while building this tracker, and how each p
 ## Prices that look wrong
 - 216 prices (0.4%) are above 5x or below 1/5 of the typical price that month. _Handled: flagged, left out of the index._
 - Milk powder, Borno, typical price per 400 g: 2022-03: 1,350, 2022-04: 15,290, 2022-05: 33,750, 2023-02: 1,880 naira. No reading exists between May 2022 and February 2023. _Handled: not counted._
-- In all, 2,460 of 52,314 basket prices since July 2017 are suspected, most of them spinach. _Handled: shown with their effect in the findings report, not counted in any final figure._
+- In all, 8,927 of 52,314 basket prices since July 2017 are suspected or not comparable, most of them from before September 2018 or spinach. _Handled: shown with their effect in the findings report, not counted in any final figure._
 - 32 dollar prices imply an exchange rate more than 5x away from the typical rate that month. _Handled: the dollar column is never used._
 
 ## Yobe, May 2021: prices that look assigned to the wrong foods
@@ -29,6 +29,30 @@ The May values for oranges, bananas and spinach match the usual price of eggs, s
 | Sugar         |       231 |        92 |       238 |
 
 _Handled: all six foods are left out for Yobe that month._
+
+## Yobe, June 2018: eleven foods halve at once and stay there
+Typical Yobe price, in naira:
+
+| food (Yobe)     |   2018-05 |   2018-06 |   2018-09 |
+|:----------------|----------:|----------:|----------:|
+| Beans (red)     |      1875 |       938 |       938 |
+| Beans (white)   |      1667 |       833 |       833 |
+| Cowpeas         |      1042 |       521 |       563 |
+| Groundnuts      |      1100 |       642 |       642 |
+| Maize flour     |       485 |       283 |       275 |
+| Millet          |       464 |       279 |       279 |
+| Rice (imported) |      2000 |      1000 |      1000 |
+| Rice (local)    |      1350 |       675 |       675 |
+| Salt            |       400 |       200 |       200 |
+| Sorghum         |       519 |       270 |       312 |
+| Sugar           |       385 |       192 |       192 |
+| Oil (palm)      |       767 |       800 |       467 |
+| Oil (vegetable) |       700 |       700 |       440 |
+
+Borno shows no such step. Both oils follow over the next two months. A change in the measure would explain it, but this is not confirmed. _Handled: final figures start in September 2018._
+
+## Whole surveys that jump and come back
+Yobe in October 2020 (basket down 22%, then up 31%) and Borno in April 2022 (down 27%, then up 45%; eggs, meat, fruit and oils are near half price). _Handled: those state months are not counted._
 
 ## Sugar: about 5x higher, twice, in every area reporting
 Typical price per 500 g, in naira:
