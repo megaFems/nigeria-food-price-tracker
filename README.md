@@ -3,8 +3,9 @@
 A reproducible data pipeline and analysis of staple food prices in Nigeria: which items and places rose
 fastest, what a basic food basket costs over time, and which price moves are unusual.
 
-**Status:** phase 1 (North-East: Borno, Yobe, Adamawa). The findings are in [reports/findings.md](reports/findings.md);
-dashboard next.
+**Live dashboard:** https://ne-nigeria-food-prices.streamlit.app
+
+**Status:** phase 1 (North-East: Borno, Yobe, Adamawa) is complete. The findings are in [reports/findings.md](reports/findings.md).
 Design decisions are recorded in [DECISIONS.md](DECISIONS.md).
 
 ## Data
