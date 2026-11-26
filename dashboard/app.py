@@ -11,6 +11,7 @@ import streamlit as st
 DATA = pathlib.Path(__file__).parent / "data"
 GAP = ("2022-06-01", "2023-01-31")
 BASE = "September 2018 to August 2019 = 100"
+REPO = "https://github.com/megaFems/nigeria-food-price-tracker"
 CREDIT = "Source: World Food Programme, via the Humanitarian Data Exchange (CC BY-IGO). Analysis: Foluso Oluwafemi."
 AREAS = ["North-East", "Borno", "Yobe"]
 COLOURS = {"North-East": "#ff7f0e", "Borno": "#4c9be8", "Yobe": "#2ca02c"}
@@ -51,6 +52,14 @@ def line_chart(series: dict, title: str, y_title: str, dotted: dict | None = Non
     return fig
 
 
+def ranking(d: pd.DataFrame, value: str, title: str, x_title: str) -> go.Figure:
+    d = d.sort_values(value)
+    fig = go.Figure(go.Bar(x=d[value], y=d["commodity"], orientation="h",
+                           marker_color=["#c0504d" if v > 0 else "#4f81bd" for v in d[value]]))
+    fig.update_layout(title=title, xaxis_title=x_title, height=22 * len(d) + 110, margin={"t": 50, "b": 10})
+    return fig
+
+
 st.title("Food prices in North-East Nigeria")
 st.caption("Borno, Yobe and Adamawa (Adamawa until November 2025). Monthly market prices, September 2018 onwards.")
 
@@ -58,9 +67,26 @@ basket, cost = load("index_basket"), load("basket_cost").set_index("month")["cos
 ne = basket[basket["area"] == "North-East"].set_index("month")
 last = ne.index.max()
 year_ago = last - pd.DateOffset(months=12)
+items_clean = load("index_items")
+now = items_clean[(items_clean["area"] == "North-East") & (items_clean["month"] == last)]
+top = now.sort_values("index", ascending=False).head(3)
+base_cost = cost[(cost.index >= "2018-09-01") & (cost.index <= "2019-08-01")].mean()
+moves = load("basket_moves")
+rise = moves[moves["change"] > 0].iloc[0]
+b_now = basket[basket["month"] == last].set_index("area")["index"]
+with st.container(border=True):
+    st.markdown("**Key findings** (clean prices only)")
+    st.markdown(
+        f"- **Cost:** one pack of each of 24 everyday foods cost about **₦{base_cost:,.0f}** in the year from September 2018 "
+        f"and **₦{cost[last]:,.0f}** in {last:%B %Y}, about **{cost[last] / base_cost:.1f} times** as much.\n"
+        f"- **Fastest risers since 2018:** " + ", ".join(f"{r.commodity} ({r.index / 100:.1f}x)" for r in top.itertuples())
+        + f". Whole basket: Borno {b_now['Borno'] / 100:.1f}x, Yobe {b_now['Yobe'] / 100:.1f}x.\n"
+        f"- **Sharpest jump:** **{rise['change']:+.0f}%** in three months, {rise['from']:%B %Y} to {rise['to']:%B %Y}, "
+        f"with {rise['moved that way']} of {rise['foods compared']} foods rising.")
+
 c1, c2, c3 = st.columns(3)
 c1.metric(f"Basket price index, {last:%b %Y}", f"{ne.at[last, 'index']:.0f}", f"{ne.at[last, 'yoy_pct']:+.1f}% on a year ago",
-          delta_color="inverse", help=BASE + ". 452 means 4.5 times the base year. Every food counts equally.")
+          delta_color="inverse", help=f"{BASE}. {ne.at[last, 'index']:.0f} means {ne.at[last, 'index'] / 100:.1f} times the base year. Every food counts equally.")
 c2.metric(f"24-food basket cost, {last:%b %Y}", f"₦{cost[last]:,.0f}",
           f"{100 * (cost[last] / cost[year_ago] - 1):+.1f}% on a year ago", delta_color="inverse",
           help="One pack of each of 24 foods at typical North-East prices; dearer packs count more than in the index.")
@@ -73,7 +99,8 @@ with st.sidebar:
                               help="Off: clean prices only, as in the findings. On: every price, to see what the suspects change.")
     st.caption("Clean prices only is the official view." if not with_suspects else "Showing every price. Not the official figures.")
 
-tab_basket, tab_food, tab_markets, tab_quality = st.tabs(["Basket", "Foods", "Markets", "Data quality"])
+tab_basket, tab_food, tab_markets, tab_shocks, tab_quality, tab_about = st.tabs(
+    ["Basket", "Foods", "Markets", "Price shocks", "Data quality", "About"])
 
 with tab_basket:
     b = pick("index_basket", "index_basket_all_prices", with_suspects)
@@ -92,6 +119,13 @@ with tab_basket:
 with tab_food:
     items = pick("index_items", "index_items_all_prices", with_suspects)
     items = items[items["month"] >= "2018-09-01"]
+    latest = items[(items["area"] == "North-East") & (items["month"] == items["month"].max())]
+    r1, r2 = st.columns(2)
+    r1.plotly_chart(ranking(latest.assign(times=latest["index"] / 100), "times",
+                            "Since September 2018 to August 2019", "times the base year"), width="stretch")
+    r2.plotly_chart(ranking(latest.dropna(subset=["yoy_pct"]), "yoy_pct",
+                            f"Last 12 months to {latest['month'].max():%b %Y}", "% change"), width="stretch")
+    st.caption("North-East. Pick foods below to see how they moved over time.")
     foods = sorted(items["commodity"].unique())
     c1, c2 = st.columns([2, 1])
     chosen = c1.multiselect("Foods", foods, default=["Rice (local)", "Eggs", "Oil (vegetable)"])
@@ -120,6 +154,29 @@ with tab_markets:
     if with_suspects:
         st.caption("This view uses clean prices only.")
 
+with tab_shocks:
+    st.write("When did prices move most? The largest 3-month rises and falls of the basket, with the foods behind them.")
+    s = ne["index"]
+    fig = line_chart({"North-East": s}, f"Food basket price index ({BASE})", "index")
+    for r in moves.itertuples():
+        fig.add_vrect(x0=r._1, x1=r.to, line_width=0, opacity=0.25,
+                      fillcolor="#d62728" if r.change > 0 else "#1f77b4")
+    st.plotly_chart(fig, width="stretch")
+    st.caption("Red: largest rises. Blue: largest falls.")
+    st.dataframe(moves.assign(**{"from": moves["from"].dt.strftime("%b %Y"), "to": moves["to"].dt.strftime("%b %Y")}),
+                 hide_index=True, width="stretch",
+                 column_config={"change": st.column_config.NumberColumn("basket change (%)", format="%+.1f")})
+    st.markdown("**Foods that moved far outside their usual range, in Borno and Yobe at the same time**")
+    u = load("unusual_moves")
+    st.dataframe(u.assign(**{"from": u["start"].dt.strftime("%b %Y"), "to": u["to"].dt.strftime("%b %Y")})
+                 [["commodity", "from", "to", "change", "borno", "yobe", "z"]],
+                 hide_index=True, width="stretch",
+                 column_config={"commodity": "food", "change": st.column_config.NumberColumn("North-East (%)", format="%+.1f"),
+                                "borno": st.column_config.NumberColumn("Borno (%)", format="%+.1f"),
+                                "yobe": st.column_config.NumberColumn("Yobe (%)", format="%+.1f"),
+                                "z": st.column_config.NumberColumn("times its usual spread", format="%.1f")})
+    st.caption("Seen in two states, a move is more likely real, but this does not show its cause. Clean prices only.")
+
 with tab_quality:
     p = load("prices")
     sus = p[p["suspect"] != ""]
@@ -146,5 +203,27 @@ with tab_quality:
                  column_config={"month": st.column_config.DateColumn(format="MMM YYYY"),
                                 "price_ngn": st.column_config.NumberColumn("price (naira)", format="%,.0f")})
 
+with tab_about:
+    st.markdown(f"""
+This dashboard answers three questions about food prices in North-East Nigeria: what a basic basket costs over time,
+which foods and places rose fastest, and which price moves were unusual.
+
+**Data.** Monthly retail prices collected by the World Food Programme in markets in Borno, Yobe and Adamawa,
+published on the Humanitarian Data Exchange under CC BY-IGO.
+
+**Method.** A Python pipeline downloads the data, checks it and stops if something looks wrong. Each food's price index
+compares markets with themselves over time, so markets joining or leaving do not move it. The basket gives each food equal weight.
+
+**Clean prices only.** Every figure uses only prices that none of the checks cast doubt on. The rest are listed in the
+Data quality tab with the difference they would make, and the switch in the sidebar shows them counted.
+
+**Why only the North-East.** It is the one area with current, detailed monthly prices. The other sources checked are
+listed in the project README.
+
+**More:** [code and README]({REPO}) · [every decision and why]({REPO}/blob/main/DECISIONS.md) ·
+[full findings]({REPO}/blob/main/reports/findings.md) · [data quality notes]({REPO}/blob/main/reports/data_quality.md)
+""")
+
 st.divider()
-st.caption(CREDIT + " Prices are from markets in areas affected by conflict; some months and foods are missing.")
+st.caption(CREDIT + " Prices are from markets in areas affected by conflict; some months and foods are missing. "
+           f"[Project on GitHub]({REPO})")

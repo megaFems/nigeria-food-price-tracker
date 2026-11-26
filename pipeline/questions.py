@@ -23,6 +23,8 @@ REPORT = ROOT / "reports" / "findings.md"
 FIGS = ROOT / "reports" / "figures"
 OUT_COST = PROCESSED / "basket_cost.parquet"
 OUT_MARKETS = PROCESSED / "market_changes.parquet"
+OUT_MOVES = PROCESSED / "basket_moves.parquet"
+OUT_UNUSUAL = PROCESSED / "unusual_moves.parquet"
 CREDIT = "Source: WFP via HDX (CC BY-IGO). Clean prices only."
 MIN_MARKET_ITEMS, MIN_MONTHS = 15, 3      # a market needs this many foods, each with this many matching months
 STEP, BIG = 3, 3                          # months in a move; robust standard deviations that count as unusual
@@ -143,6 +145,8 @@ def main() -> None:
     moves, unusual = basket_moves(basket, items), item_moves(items)
     cost.reset_index().to_parquet(OUT_COST, index=False)
     markets.to_parquet(OUT_MARKETS, index=False)
+    moves.to_parquet(OUT_MOVES, index=False)
+    unusual.to_parquet(OUT_UNUSUAL, index=False)
     charts(cost, markets)
 
     last = cost.index.max()
