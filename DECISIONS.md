@@ -18,6 +18,8 @@ WFP covers about 13 states up to 2022, but since 2023 only Borno and Yobe (plus 
   national coverage.
 - **Later note (2026-11-25):** the NBS tables I checked give zone averages and the highest and lowest state, not every
   state, and they start in November 2024. Phase 2 needs a fresh look before I commit to it.
+- **Later note (2026-11-26):** I checked other sources (NBS CPI, World Bank crowdsourced and Real Time Prices, FEWS NET).
+  None gives current monthly prices for every state; each has limits, listed in the README.
 
 ## D-003: Never use WFP `usdprice` (2026-11-16)
 - **Decision:** I ignore the `usdprice` column.

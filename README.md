@@ -13,6 +13,19 @@ Design decisions are recorded in [DECISIONS.md](DECISIONS.md).
   Monthly market prices, 2002 to present. See [DATA_SOURCES.md](DATA_SOURCES.md) for coverage and caveats.
 - Possible later: **NBS Selected Food Price Watch**. The tables checked so far give zone averages, not every state.
 
+## Why the North-East and not all of Nigeria
+I looked for a free source with food prices for every state, every month, up to now. I did not find one:
+- **WFP (this project's source):** 14 states, but 11 stopped in January 2023; only Borno and Yobe continue.
+- **NBS Selected Food Price Watch:** the tables I checked give national and zone averages and the highest and lowest
+  state, from November 2024; the food list and pack sizes change between months.
+- **NBS Consumer Price Index:** monthly food inflation for every state, but as rates, not prices.
+- **World Bank crowdsourced prices with NBS:** all 36 states and the FCT, but 10 staples and only December 2024 to June 2025.
+- **World Bank Real Time Prices:** 73 markets back to 2007, but partly modelled (estimated) prices.
+- **FEWS NET:** staple prices for selected markets only.
+
+So this project goes deep on the one area with current, detailed monthly prices. A national view is possible with the
+sources above, each with the limits shown.
+
 ## Run it
 ```
 pip install -r requirements.txt
