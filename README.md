@@ -22,6 +22,8 @@ python pipeline/indices.py       # price indices
 python pipeline/report_indices.py # write reports/indices_summary.md and charts
 python pipeline/report_quality.py # write reports/data_quality.md
 python pipeline/questions.py     # write reports/findings.md
+python pipeline/export_dashboard.py  # copy the dashboard tables into dashboard/data
+streamlit run dashboard/app.py   # open the dashboard
 ```
 
 ## Credits
